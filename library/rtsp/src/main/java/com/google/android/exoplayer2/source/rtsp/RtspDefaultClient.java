@@ -102,6 +102,9 @@ public final class RtspDefaultClient extends Client {
         } else {
             builder.header(Header.Transport, transport + ";client_port=" + localPort);
         }
+        if (session.getId() != null) {
+            builder.header(Header.Session, session.getId());
+        }
 
         dispatch(builder.build());
     }
@@ -111,6 +114,9 @@ public final class RtspDefaultClient extends Client {
         Request.Builder builder = new Request.Builder().setup().url(trackId);
         builder.header(Header.CSeq, session.nextCSeq());
         builder.header(Header.UserAgent, USER_AGENT);
+        if (session.getId() != null) {
+            builder.header(Header.Session, session.getId());
+        }
 
         builder.header(Header.Transport, transport);
 
