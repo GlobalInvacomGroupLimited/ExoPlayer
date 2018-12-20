@@ -178,6 +178,11 @@ public class PlayerControlView extends FrameLayout {
     void onVisibilityChange(int visibility);
   }
 
+  public interface  PlayerControllerEventListner {
+    void OnFullScreenButtonClicked(View button);
+    void OnCloseButtonClicked(View button);
+  }
+
   /** The default fast forward increment, in milliseconds. */
   public static final int DEFAULT_FAST_FORWARD_MS = 15000;
   /** The default rewind increment, in milliseconds. */
@@ -202,6 +207,8 @@ public class PlayerControlView extends FrameLayout {
   private final View rewindButton;
   private final ImageView repeatToggleButton;
   private final View shuffleButton;
+  private final View fullscreenButton;
+  private final View closeScreenButton;
   private final TextView durationView;
   private final TextView positionView;
   private final TimeBar timeBar;
@@ -222,6 +229,7 @@ public class PlayerControlView extends FrameLayout {
   private Player player;
   private com.google.android.exoplayer2.ControlDispatcher controlDispatcher;
   private VisibilityListener visibilityListener;
+  private PlayerControllerEventListner playerControllerEventListner;
   private @Nullable PlaybackPreparer playbackPreparer;
 
   private boolean isAttachedToWindow;
@@ -334,6 +342,17 @@ public class PlayerControlView extends FrameLayout {
     if (shuffleButton != null) {
       shuffleButton.setOnClickListener(componentListener);
     }
+    fullscreenButton = findViewById(R.id.exo_fullscreen_enter);
+    if (fullscreenButton != null) {
+      //fullscreenButton.setTranslationZ((float) 10.0);
+      fullscreenButton.setOnClickListener(componentListener);
+    }
+    closeScreenButton = findViewById(R.id.exo_close);
+    if (closeScreenButton != null) {
+      //fullscreenButton.setTranslationZ((float)20.0);
+      closeScreenButton.setOnClickListener(componentListener);
+    }
+
     Resources resources = context.getResources();
     repeatOffButtonDrawable = resources.getDrawable(R.drawable.exo_controls_repeat_off);
     repeatOneButtonDrawable = resources.getDrawable(R.drawable.exo_controls_repeat_one);
@@ -427,6 +446,10 @@ public class PlayerControlView extends FrameLayout {
    */
   public void setVisibilityListener(VisibilityListener listener) {
     this.visibilityListener = listener;
+  }
+
+  public void setPlayerControllerEventListner(PlayerControllerEventListner listener) {
+    this.playerControllerEventListner = listener;
   }
 
   /**
@@ -1035,6 +1058,12 @@ public class PlayerControlView extends FrameLayout {
     return true;
   }
 
+  public void simulateFullScreenButtonClick(){
+    if (playerControllerEventListner != null) {
+      playerControllerEventListner.OnFullScreenButtonClicked(fullscreenButton);
+    }
+  }
+
   private final class ComponentListener
       implements Player.EventListener, TimeBar.OnScrubListener, OnClickListener {
 
@@ -1093,9 +1122,19 @@ public class PlayerControlView extends FrameLayout {
     @Override
     public void onClick(View view) {
       if (player != null) {
-        if (nextButton == view) {
-          next();
-        } else if (previousButton == view) {
+        if (fullscreenButton == view) {
+            //Log.e("gi-tv-tag", "Fullscreen button clicked");
+            if (playerControllerEventListner != null) {
+              playerControllerEventListner.OnFullScreenButtonClicked(fullscreenButton);
+            }
+        } else if(closeScreenButton == view) {
+          //Log.e("gi-tv-tag", "Close button clicked");
+          if (playerControllerEventListner != null) {
+            playerControllerEventListner.OnCloseButtonClicked(closeScreenButton);
+          }
+        } else if (nextButton == view) {
+            next();
+          } else if (previousButton == view) {
           previous();
         } else if (fastForwardButton == view) {
           fastForward();

@@ -888,6 +888,11 @@ public class PlayerView extends FrameLayout {
     controller.setVisibilityListener(listener);
   }
 
+  public void setPlayerControllerEventListener(PlayerControlView.PlayerControllerEventListner listener) {
+    Assertions.checkState(controller != null);
+    controller.setPlayerControllerEventListner(listener);
+  }
+
   /**
    * Sets the {@link PlaybackPreparer}.
    *
@@ -1032,7 +1037,10 @@ public class PlayerView extends FrameLayout {
     if (ev.getActionMasked() != MotionEvent.ACTION_DOWN) {
       return false;
     }
-    return toggleControllerVisibility();
+    //return toggleControllerVisibility();
+    // Maximize screensize
+    controller.simulateFullScreenButtonClick();
+    return true;
   }
 
   @Override

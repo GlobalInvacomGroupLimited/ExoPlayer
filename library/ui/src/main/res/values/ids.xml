@@ -35,5 +35,8 @@
   <item name="exo_progress" type="id"/>
   <item name="exo_buffering" type="id"/>
   <item name="exo_error_message" type="id"/>
+  <item name="exo_fullscreen_enter" type="id"/>
+  <item name="exo_fullscreen_exit" type="id"/>
+  <item name="exo_close" type="id"/>
 
 </resources>
