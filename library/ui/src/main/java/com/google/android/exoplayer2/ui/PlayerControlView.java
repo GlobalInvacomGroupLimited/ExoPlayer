@@ -24,6 +24,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -301,7 +302,15 @@ public class PlayerControlView extends FrameLayout {
     updateProgressAction = this::updateProgress;
     hideAction = this::hide;
 
-    LayoutInflater.from(context).inflate(controllerLayoutId, this);
+
+    //LayoutInflater.from(context).inflate(controllerLayoutId, this);
+	// GiTv changes
+    try {
+      LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      layoutInflater.inflate(controllerLayoutId, this);
+    } catch(Exception e) {
+      Log.e("gi-tv-tag", "exception " + e.toString());      
+    }
     setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
 
     durationView = findViewById(R.id.exo_duration);
@@ -1058,9 +1067,17 @@ public class PlayerControlView extends FrameLayout {
     return true;
   }
 
+  // GiTV specific
   public void simulateFullScreenButtonClick(){
     if (playerControllerEventListner != null) {
       playerControllerEventListner.OnFullScreenButtonClicked(fullscreenButton);
+    }
+  }
+
+  // GiTv specific
+  public void simulateCloseButtonClick() {
+    if (playerControllerEventListner != null) {
+      playerControllerEventListner.OnCloseButtonClicked(closeScreenButton);
     }
   }
 

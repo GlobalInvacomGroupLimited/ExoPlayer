@@ -33,6 +33,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -447,6 +448,7 @@ public class PlayerView extends FrameLayout {
       // transferred, but standard FrameLayout attributes (e.g. background) are not.
       this.controller = new PlayerControlView(context, null, 0, attrs);
       controller.setLayoutParams(controllerPlaceholder.getLayoutParams());
+
       ViewGroup parent = ((ViewGroup) controllerPlaceholder.getParent());
       int controllerIndex = parent.indexOfChild(controllerPlaceholder);
       parent.removeView(controllerPlaceholder);
@@ -754,6 +756,16 @@ public class PlayerView extends FrameLayout {
 
   @Override
   public boolean dispatchKeyEvent(KeyEvent event) {
+    //Log.e("gi-tv-tag", "Player View dispatch key event" + event.getKeyCode() + " Action = " + event.getAction() +  event.keyCodeToString(event.getKeyCode()) + " " + this );
+
+    // GiTV specific - close the video notification screen on remote back or del buttons
+    if ((event.getKeyCode() == KeyEvent.KEYCODE_BACK ||
+            event.getKeyCode() == KeyEvent.KEYCODE_DEL) &&
+                    (event.getAction() == KeyEvent.ACTION_UP)) {
+      controller.simulateCloseButtonClick();
+      return true;
+    }
+
     if (player != null && player.isPlayingAd()) {
       // Focus any overlay UI now, in case it's provided by a WebView whose contents may update
       // dynamically. This is needed to make the "Skip ad" button focused on Android TV when using
@@ -763,6 +775,7 @@ public class PlayerView extends FrameLayout {
     }
     boolean isDpadWhenControlHidden =
         isDpadKey(event.getKeyCode()) && useController && !controller.isVisible();
+
     boolean handled =
         isDpadWhenControlHidden || dispatchMediaKeyEvent(event) || super.dispatchKeyEvent(event);
     if (handled) {
@@ -1039,6 +1052,7 @@ public class PlayerView extends FrameLayout {
     }
     //return toggleControllerVisibility();
     // Maximize screensize
+    Log.e("gi-tv-tag", "PlayerView - Mouse  clicked");
     controller.simulateFullScreenButtonClick();
     return true;
   }
